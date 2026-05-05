@@ -4,7 +4,7 @@ Projet de groupe pour le cours **Machine Learning III (Unsupervised Learning)** 
 
 - **Équipe** : Noah Soulisse, Isaac, Diego Guenancia
 - **Dataset** : AI4I 2020 Predictive Maintenance (`ai4i2020.csv`, 10 000 obs)
-- **Rendu** : `notebooks/final_report.ipynb`
+- **Rendu** : `final_report.ipynb` (à la racine)
 
 ## Démarrage
 
@@ -13,7 +13,7 @@ git clone https://github.com/Bl4ckMaaamba/projet-ML-groupe1.git
 cd projet-ML-groupe1
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-jupyter lab notebooks/final_report.ipynb
+jupyter lab final_report.ipynb
 ```
 
 Puis `Restart & Run All` dans Jupyter — le notebook s'exécute de bout en bout en ~2 minutes (entraînement des 4 modèles + sensitivity analysis).
@@ -40,6 +40,7 @@ Puis `Restart & Run All` dans Jupyter — le notebook s'exécute de bout en bout
 ├── README.md
 ├── requirements.txt
 ├── ai4i2020.csv
-└── notebooks/
-    └── final_report.ipynb
+└── final_report.ipynb
 ```
+
+Le notebook est segmenté par les **4 parties de l'énoncé** (bannières "Part 1", "Part 2", "Part 3", "Part 4") pour faciliter la correction.
