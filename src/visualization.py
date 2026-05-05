@@ -38,7 +38,7 @@ def tsne_2d(
     X: np.ndarray,
     perplexity: float = 30.0,
     random_state: int = 42,
-    n_iter: int = 1000,
+    max_iter: int = 1000,
 ) -> np.ndarray:
     """Project X to 2D using t-SNE.
 
@@ -50,7 +50,7 @@ def tsne_2d(
         perplexity: Roughly the number of effective nearest neighbors.
             Try [5, 30, 50] and pick the one with the clearest separation.
         random_state: For reproducibility.
-        n_iter: Number of optimization iterations.
+        max_iter: Number of optimization iterations.
 
     Returns:
         2D embedding of shape (n_samples, 2).
@@ -59,7 +59,7 @@ def tsne_2d(
         n_components=2,
         perplexity=perplexity,
         random_state=random_state,
-        n_iter=n_iter,
+        max_iter=max_iter,
         init="pca",
         learning_rate="auto",
     )
