@@ -2,76 +2,44 @@
 
 Projet de groupe pour le cours **Machine Learning III (Unsupervised Learning)** à Albert School.
 
-- **Équipe** : Noah, Isaac, Diego
+- **Équipe** : Noah Soulisse, Isaac, Diego Guenancia
 - **Dataset** : AI4I 2020 Predictive Maintenance (`ai4i2020.csv`, 10 000 obs)
-- **Énoncé** : `1773592112_Session5_Advanced_Anomaly_Detection_Assessment.pdf`
-- **Rendu final** : `notebooks/final_report.ipynb`
+- **Rendu** : `notebooks/final_report.ipynb`
 
-## Démarrage rapide
+## Démarrage
 
 ```bash
-# 1. Se placer dans le dossier
-cd ML-projet-cours
-
-# 2. Créer un environnement virtuel (Python 3.11+)
-python3 -m venv .venv
-source .venv/bin/activate
-
-# 3. Installer les dépendances
+git clone https://github.com/Bl4ckMaaamba/projet-ML-groupe1.git
+cd projet-ML-groupe1
+python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-
-# 4. Activer nbstripout (clean les outputs des notebooks dans les commits)
-nbstripout --install
-
-# 5. Lancer Jupyter
-jupyter lab
+jupyter lab notebooks/final_report.ipynb
 ```
 
-## Workflow Git
+Puis `Restart & Run All` dans Jupyter — le notebook s'exécute de bout en bout en ~2 minutes (entraînement des 4 modèles + sensitivity analysis).
 
-Chacun travaille sur sa branche perso, créée depuis `main` :
+## Contenu du notebook
 
-```bash
-git checkout main
-git pull
-git checkout -b noah/eda      # Noah uniquement
-git checkout -b isaac/models  # Isaac uniquement
-git checkout -b diego/eval    # Diego uniquement
-```
+`final_report.ipynb` est **autonome** : tous les helpers (preprocessing, modèles, évaluation, visualisation) sont définis inline. Il couvre les 4 parties de l'énoncé :
 
-Commits réguliers (≥ 6 par personne), conventionnels (`feat:`, `fix:`, `docs:`, `refactor:`, `chore:`).
-Merge sur `main` en phase 3 (assemblage).
+1. **EDA & Preprocessing** — distributions, corrélations, justification des choix de scaling et d'encoding
+2. **Modeling & Tuning** — 4 modèles (Isolation Forest, One-Class SVM, LOF, Elliptic Envelope), hyperparamètres calibrés et justifiés
+3. **Visualisation & Deep Dive** — projection PCA, superposition des décisions des 4 modèles, deep dive mathématique sur 4 cas réels de désaccord
+4. **Cost Analysis & Recommandation** — analyse coût (FP €500, FN €15 000), sensitivity analysis sur `nu`, recommandation business chiffrée
 
-## Documentation
+## Résultat clé
 
-- `PLAN.md` — plan d'ensemble, stratégie 20/20, phasage temporel
-- `TASKS_NOAH.md` — checklist Noah (EDA + preprocessing)
-- `TASKS_ISAAC.md` — checklist Isaac (4 modèles + tuning)
-- `TASKS_DIEGO.md` — checklist Diego (viz + analyse coût + reco business)
+**Modèle recommandé** : One-Class SVM avec `nu = 0.25`.
+**Pertes attendues annuelles** : €2.32 M (vs. €5.09 M sans détection, **−54.3 %**).
+**Recall** : 76 % sur les pannes réelles, au prix de ~6 fausses alertes par jour.
 
-## Structure
+## Structure du repo
 
 ```
-ML-projet-cours/
-├── ai4i2020.csv
-├── 1773592112_Session5_*.pdf
-├── PLAN.md
-├── TASKS_*.md
+.
 ├── README.md
 ├── requirements.txt
-├── .gitignore
-├── src/
-│   ├── __init__.py
-│   ├── preprocessing.py    # Noah
-│   ├── models.py           # Isaac
-│   ├── evaluation.py       # Diego
-│   └── visualization.py    # Diego
-├── notebooks/
-│   ├── 01_eda.ipynb        # Noah (sandbox)
-│   ├── 02_models.ipynb     # Isaac (sandbox)
-│   ├── 03_evaluation.ipynb # Diego (sandbox)
-│   └── final_report.ipynb  # rendu final
-└── outputs/
-    ├── figures/            # PNG exportés
-    └── results/            # CSV des prédictions
+├── ai4i2020.csv
+└── notebooks/
+    └── final_report.ipynb
 ```
