@@ -164,5 +164,36 @@ def plot_cost_curve(
     figsize: tuple[float, float] = (8, 5),
     dpi: int = 150,
 ) -> plt.Figure:
-    """Plot total business cost as a function of contamination."""
-    raise NotImplementedError
+    """Plot total business cost as a function of contamination.
+
+    A vertical line marks the cost-minimizing contamination.
+
+    Args:
+        contaminations: Tested contamination values.
+        costs: Total cost for each contamination value (same order).
+        save_path: If given, save the figure to this path.
+        figsize: Figure size in inches.
+        dpi: Resolution for save.
+
+    Returns:
+        The matplotlib figure.
+    """
+    contaminations = np.asarray(list(contaminations))
+    costs = np.asarray(list(costs))
+    best_idx = int(np.argmin(costs))
+    best_c = float(contaminations[best_idx])
+    best_cost = float(costs[best_idx])
+
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.plot(contaminations, costs, marker="o", color="tab:purple")
+    ax.axvline(best_c, color="tab:green", linestyle="--", label=f"min @ c={best_c:.3f}")
+    ax.scatter([best_c], [best_cost], color="tab:green", zorder=5)
+    ax.set_xlabel("Contamination")
+    ax.set_ylabel("Total cost (€)")
+    ax.set_title("Sensitivity of business cost to contamination")
+    ax.legend()
+    ax.grid(alpha=0.3)
+    fig.tight_layout()
+    if save_path is not None:
+        fig.savefig(save_path, dpi=dpi, bbox_inches="tight")
+    return fig

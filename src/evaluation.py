@@ -91,13 +91,48 @@ def compare_models(
     fp_cost: float = FP_COST,
     fn_cost: float = FN_COST,
 ) -> pd.DataFrame:
-    """Build a comparison table across models, sorted by ascending cost."""
-    raise NotImplementedError
+    """Build a comparison table across models, sorted by ascending cost.
+
+    Predictions can be either sklearn-style (-1/1) or already binary (0/1):
+    they are normalised internally with ``to_binary`` if any -1 is detected.
+
+    Args:
+        y_true: Ground-truth binary labels.
+        predictions: Mapping model name -> prediction array.
+        fp_cost: Cost per false positive.
+        fn_cost: Cost per false negative.
+
+    Returns:
+        DataFrame with one row per model, columns:
+        model, tp, fp, fn, tn, cost_eur, recall, precision.
+    """
+    rows = []
+    for name, pred in predictions.items():
+        pred = np.asarray(pred)
+        if (pred == -1).any():
+            pred = to_binary(pred)
+        scores = cost_score(y_true, pred, fp_cost=fp_cost, fn_cost=fn_cost)
+        rows.append({"model": name, **scores})
+    return (
+        pd.DataFrame(rows)
+        .sort_values("cost_eur", kind="stable")
+        .reset_index(drop=True)
+    )
 
 
 def disagreement_matrix(predictions: dict[str, np.ndarray]) -> pd.DataFrame:
-    """Build a per-row prediction matrix and flag disagreements."""
-    raise NotImplementedError
+    """Build a per-row prediction matrix and flag disagreements.
+
+    Args:
+        predictions: Mapping model name -> sklearn prediction array.
+
+    Returns:
+        DataFrame with one column per model + a boolean column
+        ``disagreement`` (True if at least two models disagree on this row).
+    """
+    df = pd.DataFrame({k: np.asarray(v) for k, v in predictions.items()})
+    df["disagreement"] = df.nunique(axis=1) > 1
+    return df
 
 
 def sensitivity_curve(
@@ -107,5 +142,24 @@ def sensitivity_curve(
     fp_cost: float = FP_COST,
     fn_cost: float = FN_COST,
 ) -> pd.DataFrame:
-    """Re-train a model across a contamination grid and report cost per setting."""
-    raise NotImplementedError
+    """Re-train a model across a contamination grid and report cost per setting.
+
+    Args:
+        y_true: Ground-truth binary labels (held out, only used to score).
+        train_predict_fn: Callable ``contamination -> y_pred_sklearn``.
+            Typically a closure around the chosen model + scaled X.
+        contamination_grid: Contamination values to test.
+        fp_cost: Cost per false positive.
+        fn_cost: Cost per false negative.
+
+    Returns:
+        DataFrame with columns: contamination, tp, fp, fn, tn,
+        cost_eur, recall, precision (one row per contamination).
+    """
+    rows = []
+    for c in contamination_grid:
+        y_pred = train_predict_fn(c)
+        y_pred_binary = to_binary(y_pred)
+        scores = cost_score(y_true, y_pred_binary, fp_cost=fp_cost, fn_cost=fn_cost)
+        rows.append({"contamination": float(c), **scores})
+    return pd.DataFrame(rows)
